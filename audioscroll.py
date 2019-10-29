@@ -2,19 +2,26 @@ from pymouse import PyMouseEvent, PyMouse
 import os
 import sys
 
-if len(sys.argv) != 2:
-    print("Missing or too many arguments! Usage: python3 audioscroll.py <u/d>")
+if len(sys.argv) != 3:
+    print("Missing or too many arguments!")
+    print("Usage: python3 audioscroll.py <u/d> <l/f>")
     sys.exit(1)
 
 if sys.argv[1] == "u":
-    mult = 1
+    u_d = 1
 else:
-    mult = -1
+    u_d = -1
+
+if sys.argv[2] == "l":
+    l_r = 1
+else:
+    l_r = 0
 
 
 class Scrolling(PyMouseEvent):
     m = PyMouse()
-    screen_width = m.screen_size()[0]
+    screen = m.screen_size()
+    screen_size = (screen[0], 0)
 
     def __init__(self):
         PyMouseEvent.__init__(self)
@@ -23,8 +30,8 @@ class Scrolling(PyMouseEvent):
         self.state = False
 
     def scroll(self, x, y, vertical, horizontal):
-        if x >= (self.screen_width - 1):
-            if(vertical*mult > 0):
+        if abs(x - self.screen_size[l_r]) < 2:
+            if(vertical*u_d > 0):
                 os.system("amixer -D pulse sset Master 5%+")
             else:
                 os.system("amixer -D pulse sset Master 5%-")
